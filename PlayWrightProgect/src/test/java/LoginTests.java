@@ -15,6 +15,8 @@ public class LoginTests extends TestBase{
 
     @Test
     public void login() {
+
+        String messageText = "Text to sent for teacher";
         page.setDefaultTimeout(60000);
 
         page.fill("[name='userName']", "ETC1");
@@ -56,7 +58,7 @@ public class LoginTests extends TestBase{
         fr.locator("#strsubject").fill("Subject");
 
         FrameLocator nestedFrame = fr.frameLocator("#editorTextArea_ifr");
-        nestedFrame.locator("#tinymce").fill("Txt to send");
+        nestedFrame.locator("#tinymce").fill(messageText);
 
         //click to send message
         fr.locator(".featureBarBtn:first-child").click();
@@ -120,17 +122,32 @@ public class LoginTests extends TestBase{
         assertTrue(studentName.equalsIgnoreCase("ETC1"),"Student name incorrect or no message");
 
         //click on latest student message
+           //tableFrame.locator("//tbody[@id='tblBody']/tr[1]/td[1]/a").click();
+
+        Page popup2 = page.waitForPopup(() -> {
+            page.frameLocator("#mainFrame").frameLocator("#tableFrame").locator("//tbody[@id='tblBody']/tr[1]/td[1]/a").click();
+        });
+        popup2.waitForLoadState();
+        String textMessage = popup2.locator("p").innerText();
+        assertTrue(messageText.equals(textMessage),"text wasn't sent or it's not match");
+        popup2.close();
+
+
+        //logOut from TMS
+        mainFrame.locator("//a[text()='Exit']").click();
+        page.waitForLoadState();
+
+
+
 
        /* Page popup2 = tableFrame.wait(() -> {
-            tableFrame.locator("//tbody[@id='tblBody']/tr[1]/td[1]/a").click();
+
             //page2.locator("//*[@id='mainAreaTD']/form/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/a").click();
         });
         popup2.waitForLoadState();*/
-        tableFrame.locator("//tbody[@id='tblBody']/tr[1]/td[1]/a").click();
+       /* tableFrame.locator("//tbody[@id='tblBody']/tr[1]/td[1]/a").click();
         BrowserContext popupContext = browser.newContext();
-        Page popupPage = popupContext.pages().get(0);
-
-
+        Page popupPage = popupContext.pages().get(0);*/
 
 
     }
