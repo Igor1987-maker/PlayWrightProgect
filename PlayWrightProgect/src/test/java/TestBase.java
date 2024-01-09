@@ -1,18 +1,28 @@
 import applications.ApplicationManager;
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.microsoft.playwright.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 
 import java.awt.*;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import static com.microsoft.playwright.BrowserType.*;
 
 
 public class TestBase {
-    protected static ApplicationManager app =
+    public static ApplicationManager app =
             new ApplicationManager(System.getProperty("browser", "Chrome"));
-
+    ExtentReports extent;
+    ExtentTest test;
+    Logger logger = LoggerFactory.getLogger(TestBase.class);
   /*  private static Playwright playwright;
     public static Browser browser;
     public static BrowserContext context;
@@ -21,6 +31,11 @@ public class TestBase {
     @BeforeSuite(alwaysRun = true)
     public void setUp() throws IOException {
         app.init();
+        //ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter("extent-report.html");
+        extent = new ExtentReports();
+        ExtentSparkReporter spark = new ExtentSparkReporter("target/Spark.html");
+        extent.attachReporter(spark);
+
         /*playwright = Playwright.create();
         final LaunchOptions options = new LaunchOptions();
         options.setHeadless(false);
@@ -38,9 +53,11 @@ public class TestBase {
 
     }
 
+
     @AfterSuite
     public void tearDown(){
-
+        app.stop();
+        extent.flush();
     }
 
 
